@@ -1,16 +1,9 @@
 const { MongoClient } = require("mongodb");
 const objectId = require("mongodb").ObjectId;
 require("dotenv").config();
-const admin = require("firebase-admin");
 
 const express = require("express");
 const cors = require("cors");
-
-const serviceAccount = JSON.parse(process.env.FIREBASS_SERVICE_ACCOUNT);
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -24,18 +17,6 @@ const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-
-async function verifyToken(req, res, next) {
-  if (req.headers?.authorization?.startsWith("Bearer ")) {
-    const token = req.headers.authorization.split(" ")[1];
-
-    try {
-      const decodedUser = await admin.auth().verifyIdToken(token);
-      req.decodedEmail = decodedUser.email;
-    } catch {}
-  }
-  next();
-}
 
 async function run() {
   try {
@@ -144,7 +125,7 @@ async function run() {
       res.json(result);
     });
 
-    app.put("/users/admin", verifyToken, async (req, res) => {
+    app.put("/users/admin", async (req, res) => {
       const user = req.body;
       const requester = req.decodedEmail;
       if (requester) {
