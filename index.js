@@ -6,7 +6,7 @@ const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
 
-const serviceAccount = require("./happy-home-mh-firebase-adminsdk.json");
+const serviceAccount = JSON.parse(process.env.FIREBASS_SERVICE_ACCOUNT);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
